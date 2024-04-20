@@ -1,4 +1,4 @@
-import os
+import os, re
 from datetime import datetime
 import logging
 import logging.handlers
@@ -44,7 +44,7 @@ def commid_to_steamid(commid):
 async def send_message(msg, original_msg):
     channel = discord.utils.get(client.get_all_channels(), name = 'tag-output')
     await channel.send(msg)
-    await original_msg.add_reaction('\N{THUMBS UP SIGN}')
+    await original_msg.add_reaction('✅')
 
 @client.event
 async def on_message(message):
@@ -57,6 +57,7 @@ async def on_message(message):
         if("https://steamcommunity.com/" in message.content and message.channel.name == 'tag-request'):
             lines = str(message.content).splitlines()
             tag = color = steam_url = None
+            comments = []
 
             #Parse message
             for line in lines:
@@ -64,11 +65,18 @@ async def on_message(message):
                 if('tag' in lower_line):
                     tag = line.split(':')[-1].lstrip(' ')
                 elif('color' in lower_line):
-                    color = line.split(':')[-1].replace('#', '').replace(' ','')
+                    if re.search('[A-Fa-f0-9]{6}', line) != None:
+                        color = line.split(':')[-1].replace('#', '').replace(' ','')
                 elif('steam' in lower_line):
                     steam_url = line.split(':')[-1].replace(' ','')
+                else:
+                    comments.append(line)
                 
             #ERROR CHECK
+            if(tag == None or color == None or steam_url == None):
+                await message.add_reaction('❌')
+                return
+
             assert tag != None
             assert color != None
             assert steam_url != None
@@ -79,12 +87,19 @@ async def on_message(message):
             steam_id = commid_to_steamid(steam_id_64)
 
             #Construct config entry
-            first_line = '\"' + steam_id + '\"\t// ' + str(message.author) +'\n{\n'
+            first_line = '```\"' + steam_id + '\"\t// ' + str(message.author).replace('_','') +'\n{\n'
             tag_line = '\t\"tag\"\t\t\"[' + tag + '] \"\n'
             namecolor_line = '\t\"namecolor\"\t\t\"\"\n'
-            tagcolor_line = '\t\"tagcolor\"\t\t\"' + color + '\"\n}'
-            
+            tagcolor_line = '\t\"tagcolor\"\t\t\"' + color + '\"\n}```'
+
             new_message = first_line + tag_line + namecolor_line + tagcolor_line
+
+            #Comments
+            if len(comments) != 0:
+                new_message += "COMMENTS\n------------------\n"
+
+                for comment in comments:
+                    new_message += comment + '\n'
         
         if new_message:
             await send_message(new_message, message)
