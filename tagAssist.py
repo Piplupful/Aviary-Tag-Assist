@@ -1,5 +1,6 @@
 import os, re
 from datetime import datetime
+from contextlib import suppress
 import logging
 import logging.handlers
 
@@ -24,6 +25,9 @@ logger.setLevel(logging.DEBUG)
 
 handler = logging.handlers.RotatingFileHandler("log/errors.log", maxBytes=1024, backupCount=2)
 logger.addHandler(handler)
+
+#RegEx
+re_steam_64 = re.compile('[0-9]{17}')
 
 #From: https://gist.github.com/bcahue/4eae86ae1d10364bb66d
 steamid64ident = 76561197960265728
@@ -69,10 +73,10 @@ async def on_message(message):
                         color = line.split(':')[-1].replace('#', '').replace(' ','')
                 elif('steam' in lower_line):
                     steam_url = line.split(':')[-1].replace(' ','')
-                else:
+                elif line and not line.isspace():
                     comments.append(line)
                 
-            #ERROR CHECK
+            #INPUT ERROR CHECK
             if(tag == None or color == None or steam_url == None):
                 await message.add_reaction('❌')
                 return
@@ -81,9 +85,25 @@ async def on_message(message):
             assert color != None
             assert steam_url != None
 
+            steam_url_id = steam_id_64 = steam_id = None
+
             #Get steam id info
-            steam_url_id = steam_url.split('/')[-2]
-            steam_id_64 = steam_url_id if str(steam_url_id).isnumeric() else steam.users.get_steamid(steam_url_id)['steamid']
+            steam_url_id = steam_url.split('/')[-1] if steam_url[-1] != '/' else steam_url.split('/')[-2]
+
+            #Incomplete Steam URL Error Check
+            if steam_url_id == 'id' or steam_url_id == 'profiles':
+                await message.add_reaction('❌')
+                return
+
+            if  re_steam_64.fullmatch(steam_url_id):
+                steam_id_64 = steam_url_id
+            elif re.search('[a-zA-Z]', steam_url_id):
+                with suppress(KeyError):  steam_id_64 = steam.users.get_steamid(steam_url_id)['steamid']
+
+            if steam_id_64 == None:
+                await message.add_reaction('❌')
+                return
+
             steam_id = commid_to_steamid(steam_id_64)
 
             #Construct config entry
@@ -96,8 +116,7 @@ async def on_message(message):
 
             #Comments
             if len(comments) != 0:
-                new_message += "COMMENTS\n------------------\n"
-
+                new_message += "**COMMENTS**\n===========\n"
                 for comment in comments:
                     new_message += comment + '\n'
         
