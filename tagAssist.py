@@ -144,7 +144,7 @@ async def on_raw_reaction_add(payload):
         if payload.emoji.name == '👍':
             msg = await channel.fetch_message(payload.message_id)
 
-            if('STEAM_0:0:' not in msg.content):
+            if('STEAM_0:0:' not in msg.content) and ('STEAM_0:1:' not in msg.content):
                 return
 
             to_insert = msg.content.split('```')[1]

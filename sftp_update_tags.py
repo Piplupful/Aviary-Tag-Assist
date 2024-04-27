@@ -25,9 +25,11 @@ def update_tags(to_insert_str):
         f.seek(0)
 
         #WHAT TO INSERT
-        find_insert = to_insert_str[to_insert_str.find('\"STEAM_0:0'):to_insert_str.find('//')].strip()
-        print(find_insert)
-        print(data.find(find_insert))
+        find_idx = to_insert_str.find('\"STEAM_0:0')
+        if find_idx == -1:
+            find_idx = to_insert_str.find('\"STEAM_0:1')
+
+        find_insert = to_insert_str[find_idx:to_insert_str.find('//')].strip()
         to_insert_list = to_insert_str.split('\n')
 
         #EXISTING TAG
