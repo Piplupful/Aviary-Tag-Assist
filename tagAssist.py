@@ -1,4 +1,4 @@
-import os, re, ftplib
+import os, re
 from datetime import datetime
 from contextlib import suppress
 import logging
@@ -56,6 +56,8 @@ async def send_message(msg, original_msg):
 async def on_message(message):
     try:
         if(message.author.id == client.user.id):
+            if message.channel.name == 'tag-output':
+                await message.add_reaction('👍')
             return
         
         new_message = None
@@ -128,4 +130,28 @@ async def on_message(message):
     except Exception as e:
         logger.error(f"{datetime.now()}: {e}\t{message}")
         
+@client.event
+async def on_raw_reaction_add(payload):
+    try:
+        channel = discord.utils.get(client.get_all_channels(), name = 'tag-output')
+        
+        if payload.channel_id != channel.id:
+            return
+        
+        if(payload.user_id == client.user.id):
+            return
+        
+        if payload.emoji.name == '👍':
+            msg = await channel.fetch_message(payload.message_id)
+
+            if('STEAM_0:0:' not in msg.content):
+                return
+
+            to_insert = msg.content.split('```')[1]
+            update_tags(to_insert)
+        else:
+            return
+    except Exception as e:
+        logger.error('ON REACTION TO ADD TO TAGS:\t' + e)
+
 client.run(DISCORD_TOKEN)

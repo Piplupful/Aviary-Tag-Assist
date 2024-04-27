@@ -25,7 +25,6 @@ def update_tags(to_insert_str):
         f.seek(0)
 
         #WHAT TO INSERT
-        to_insert_str = open('./INPUT.txt','r').read()
         find_insert = to_insert_str[to_insert_str.find('\"STEAM_0:0'):to_insert_str.find('//')]
         to_insert_list = to_insert_str.split('\n')
 
