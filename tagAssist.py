@@ -1,4 +1,4 @@
-import os, re
+import os, re, ftplib
 from datetime import datetime
 from contextlib import suppress
 import logging
@@ -8,6 +8,8 @@ import discord
 from dotenv import load_dotenv
 
 from steam import Steam
+
+from sftp_update_tags import *
 
 load_dotenv()
 DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
