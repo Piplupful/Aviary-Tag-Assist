@@ -70,12 +70,12 @@ async def on_message(message):
             #Parse message
             for line in lines:
                 lower_line = line.lower()
-                if('tag' in lower_line):
+                if('tag:' in lower_line):
                     tag = line.split(':')[-1].lstrip(' ').strip('[]')
-                elif('color' in lower_line or 'colour' in lower_line):
+                elif('color:' in lower_line or 'colour:' in lower_line):
                     if re.search('[A-Fa-f0-9]{6}', line) != None:
                         color = line.split(':')[-1].replace('#', '').replace(' ','')
-                elif('steam' in lower_line):
+                elif('steam:' in lower_line):
                     steam_url = line.split(':')[-1].replace(' ','')
                 elif line and not line.isspace():
                     comments.append(line)
