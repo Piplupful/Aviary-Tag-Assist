@@ -99,10 +99,8 @@ async def on_message(message):
                 await message.add_reaction('❌')
                 return
 
-            if  re_steam_64.fullmatch(steam_url_id):
-                steam_id_64 = steam_url_id
-            elif re.search('[a-zA-Z]', steam_url_id):
-                with suppress(KeyError):  steam_id_64 = steam.users.get_steamid(steam_url_id)['steamid']
+            with suppress(KeyError):
+                steam_id_64 = steam_url_id if re_steam_64.fullmatch(steam_url_id) else steam.users.get_steamid(steam_url_id)['steamid']
 
             if steam_id_64 == None:
                 await message.add_reaction('❌')
