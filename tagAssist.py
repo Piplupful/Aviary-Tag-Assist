@@ -85,7 +85,7 @@ async def on_message(message):
             #INPUT ERROR CHECK
             if(tag == None or color == None
                or steam_url == None
-               or tag > MAX_TAG_LEN):
+               or len(tag) > MAX_TAG_LEN):
                 await message.add_reaction('❌')
                 return
             
