@@ -22,12 +22,12 @@ client = discord.Client(intents = intents)
 
 steam = Steam(STEAM_TOKEN)
 
-MAX_TAG_LEN = os.getenv('MAX_TAG_LEN')
+MAX_TAG_LEN = int(os.getenv('MAX_TAG_LEN'))
 
 logger = logging.getLogger('logger')
 logger.setLevel(logging.DEBUG)
 
-handler = logging.handlers.RotatingFileHandler("log/errors.log", maxBytes=1024, backupCount=2)
+handler = logging.handlers.RotatingFileHandler(os.getenv('LOG_PATH'), maxBytes=1024, backupCount=2)
 logger.addHandler(handler)
 
 #RegEx
