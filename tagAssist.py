@@ -22,6 +22,8 @@ client = discord.Client(intents = intents)
 
 steam = Steam(STEAM_TOKEN)
 
+MAX_TAG_LEN = os.getenv('MAX_TAG_LEN')
+
 logger = logging.getLogger('logger')
 logger.setLevel(logging.DEBUG)
 
@@ -81,10 +83,12 @@ async def on_message(message):
                     comments.append(line)
                 
             #INPUT ERROR CHECK
-            if(tag == None or color == None or steam_url == None):
+            if(tag == None or color == None
+               or steam_url == None
+               or tag > MAX_TAG_LEN):
                 await message.add_reaction('❌')
                 return
-
+            
             assert tag != None
             assert color != None
             assert steam_url != None
@@ -110,7 +114,7 @@ async def on_message(message):
 
             #Construct config entry
             first_line = '```\"' + steam_id + '\"\t// ' + str(message.author).replace('_','') +'\n{\n'
-            tag_line = '\t\"tag\"\t\t\"[' + tag + '] \"\n'
+            tag_line = '\t\"tag\"\t\t\"[' + tag.rstrip().lstrip() + '] \"\n'
             namecolor_line = '\t\"namecolor\"\t\t\"\"\n'
             tagcolor_line = '\t\"tagcolor\"\t\t\"' + color + '\"\n}```'
 
