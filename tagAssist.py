@@ -7,7 +7,7 @@ import logging.handlers
 import discord
 from dotenv import load_dotenv
 
-from steam import Steam
+from steam_web_api import Steam
 
 from sftp_update_tags import *
 
@@ -154,6 +154,6 @@ async def on_raw_reaction_add(payload):
         else:
             return
     except Exception as e:
-        logger.error('ON REACTION TO ADD TO TAGS:\t' + e)
+        logger.error('ON REACTION TO ADD TO TAGS:\t' + str(e))
 
 client.run(DISCORD_TOKEN)

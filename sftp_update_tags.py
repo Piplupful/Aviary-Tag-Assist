@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 HOSTNAME = os.getenv('HOSTNAME')
-USERNAME = os.getenv('USER')
+USERNAME = os.getenv('USERNAME')
 PASSWORD = os.getenv('PASSWORD')
 hostpath = os.getenv('HOSTPATH')
 hostfile = os.getenv('HOSTFILE')
