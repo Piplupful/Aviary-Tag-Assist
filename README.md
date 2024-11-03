@@ -3,6 +3,8 @@ Tag Request assistance Discord Bot for the Aviary Discord Server.
 Based off Pip's prior work on:
 https://github.com/Piplupful/VXBot
 
+pysftp required, version 0.2.8 REQUIRED.
+
 Variables to declare in a .env file
 ===================================
 - DISCORD_TOKEN=TOKEN_HERE
