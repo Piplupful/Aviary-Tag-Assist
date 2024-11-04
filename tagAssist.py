@@ -3,6 +3,7 @@ from datetime import datetime
 from contextlib import suppress
 import logging
 import logging.handlers
+from asyncio import sleep
 
 import discord
 from dotenv import load_dotenv
@@ -11,9 +12,16 @@ from steam_web_api import Steam
 
 from sftp_update_tags import *
 
+from rcon.source import Client
+
 load_dotenv()
 DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
 STEAM_TOKEN = os.getenv('STEAM_API_TOKEN')
+
+SV_IP = os.getenv('SERVER_IP')
+SV_PORT = int(os.getenv('SERVER_PORT'))
+RCON_PASSWORD = os.getenv('RCON_PASSWORD')
+print("RCON:", SV_IP, SV_PORT, RCON_PASSWORD)
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -151,6 +159,11 @@ async def on_raw_reaction_add(payload):
 
             to_insert = msg.content.split('```')[1]
             update_tags(to_insert)
+
+            #await sleep(5) # give ftp time to work its magic
+            with Client(SV_IP, SV_PORT, passwd=RCON_PASSWORD) as rcon:
+                response = rcon.run("sm_reloadccc")
+
         else:
             return
     except Exception as e:
