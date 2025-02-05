@@ -3,3 +3,4 @@ log/*
 *pycache*
 *.cfg
 logs/*
+*.service
