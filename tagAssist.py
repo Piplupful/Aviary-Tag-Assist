@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 
 from steam_web_api import Steam
 
-from sftp_update_tags import *
+from updateTags import *
 
 from rcon.source import Client
 
